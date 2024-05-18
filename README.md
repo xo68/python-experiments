@@ -1,2 +1,2 @@
-# go-experiments
-Repository for practicing the golang programming language
+# Python-experiments
+Repository for practicing the python programming language
