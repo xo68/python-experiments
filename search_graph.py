@@ -1,5 +1,9 @@
 from collections import deque
 
+# In case of a graph with negative weights, use the Bellman-Ford algorithm.
+# No weight -> Use BFS
+# Poistive weight -> Use Dikstra
+
 
 # Create a graph and run BFS
 def bfs():
