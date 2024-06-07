@@ -4,36 +4,50 @@
 
 import requests
 
-# URL & AUTHENTICATION
+# URLS
 URL = "*****"
-USER = "*****"
-PASSWORD = "*****"
-
-# PROJECT, CAMPAIGN & ITERATION IN SCOPE
-PROJECT_NAME = "*****"
-PROJECT_ID = 12
-CAMPAIGN_ID = 30
-ITERATION_NAME = "********"
-ITERATION_ID = 18
-
-# API CALLS TO BE USED
 GET_PROJECT = URL + "/api/rest/latest/projects/"
-GET_PROJECTS = URL + "/api/rest/latest/projects?type=STANDARD"
+GET_PROJECTS = URL + "/api/rest/latest/projects"
 GET_CAMPAIGNS = URL + "/api/rest/latest/campaigns/"
 GET_ITERATIONS = URL + "/api/rest/latest/iterations/"
+
+# Project & Credentials
+PROJECT_NAME = "*****"
+USER = "*****"
+PASSWORD = "*****"
 
 
 # Validate if a connection can be made
 def try_connection():
-    print(f"URL:[{URL}]")
     r = requests.get(URL, auth=(USER, PASSWORD))
     if r.status_code == 200:
-        print("Connection Succesfull")
-        r.close()
         return True
-    else:
-        print("Connection Failed")
-        return False
+    return False
+
+
+# Return campaign status
+# [None | Underfined | Planned | In Progress | Finished | Archived]
+def get_campaign_status(campaign_id):
+    r = requests.get(GET_CAMPAIGNS + str(campaign_id), auth=(USER, PASSWORD))
+    if r.status_code == 200:
+        cmp = r.json()
+        return cmp["status"]
+    return None
+
+
+# Return a dict of CAMPAIGN_ID : CAMPAIGN_NAME
+def get_all_campaigns(project_id):
+    r = requests.get(
+        GET_PROJECT + str(project_id) + "/campaigns", auth=(USER, PASSWORD)
+    )
+    if r.status_code == 200:
+        cmp = r.json()
+        if "_embedded" in cmp.keys():
+            cmp_dict = {}
+            for c in cmp["_embedded"]["campaigns"]:
+                cmp_dict[c["id"]] = c["name"]
+            return cmp_dict
+    return None
 
 
 # Display all projects and projects ID
@@ -102,18 +116,33 @@ def display_testplan(iter_id):
         GET_ITERATIONS + str(iter_id) + "/test-plan",
         auth=(USER, PASSWORD),
     )
-    print(r.text)
+
+
+# Return project ID based on project name
+def get_project_id(project_name):
+    r = requests.get(
+        GET_PROJECTS + "?projectName=" + project_name,
+        auth=(USER, PASSWORD),
+    )
+    if r.status_code == 200:
+        cmp = r.json()
+        return cmp["id"]
+    return None
 
 
 if __name__ == "__main__":
-    connection = try_connection()
-    if connection:
-        # This will list the test cases and statusses
-        display_testplan(ITERATION_ID)
 
-        # display_iteration(ITERATION_ID)
-        # display_campaign(CAMPAIGN_ID)
-        # c = get_campaigns(PROJECT_ID)
-        # display_campaigns(PROJECT_ID)
-        # display_project(PROJECT_ID)
-        # display_all_projects()
+    if not try_connection():
+        print("Connection Error !")
+        exit()
+
+    if not (project_id := get_project_id(PROJECT_NAME)):
+        print(f"Project '{PROJECT_NAME}' Not Found !")
+        exit()
+    print(f"Project ID {project_id} is {PROJECT_NAME}")
+
+    if list_campaigns := get_all_campaigns(project_id):
+        print(f"Total Campaigns is {len(list_campaigns)}")
+        for cmp in list_campaigns:
+            print(f"Campaign ID:{cmp} = {list_campaigns[cmp]}")
+            print(f"> Status={get_campaign_status(cmp)}")
