@@ -162,7 +162,7 @@ def display_iterations(campaign_id):
 # }
 #
 # r = requests.post(
-#     "https://saas-ubs01.henix.com/squash/api/rest/latest/custom-fields",
+#     "URL/squash/api/rest/latest/custom-fields",
 #     json=myobj,
 #     auth=(USER, PASSWORD),
 # )
