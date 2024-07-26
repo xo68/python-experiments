@@ -147,6 +147,35 @@ def display_iterations(campaign_id):
                     print(f"  >> Test Case: {tc}")
 
 
+##############################################
+# Snippets for creating custom fields
+
+# myobj = {
+#     "_type": "custom-field",
+#     "name": "new_field",
+#     "label": "new_field",
+#     "code": "new_field",
+#     "input_type": "DROPDOWN_LIST",
+#     "optional": True,
+#     "default_value": "val_default",
+#     "options": [],
+# }
+#
+# r = requests.post(
+#     "https://saas-ubs01.henix.com/squash/api/rest/latest/custom-fields",
+#     json=myobj,
+#     auth=(USER, PASSWORD),
+# )
+# print(f"Status Code: {r.status_code}, Response: {r.json()}")
+#
+# for i in range(1, 100):
+#     r = requests.post(
+#         "URL/squash/api/rest/latest/custom-fields/{field-id}/options",
+#         json={"label": "val" + str(i), "code": "val" + str(i), "colour": "#ff8000"},
+#         auth=(USER, PASSWORD),
+#     )
+#################################################
+
 if __name__ == "__main__":
     if not try_connection():
         print("Connection Error !")
